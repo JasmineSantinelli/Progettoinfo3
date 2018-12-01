@@ -8,8 +8,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -28,14 +31,28 @@ public class Upload extends AsyncTask<String, Void, Void> {
         HttpPost httppost = new HttpPost("http://progettoscandurra.andreacavagna.it/caricacellulare");
 
         try {
+            File file = new File(path);
+            MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+            entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+            // DEVI AGGIUNGERE IN QUALCHE MODO QUI IL CONTENT TYPE JPEG JPG IN MODO CHE IL CODICE LO ACCETTI
+            // SE VUOI POSSO TOGLIERE IL FATTO CHE CONTROLLI CHE IL FILE INSERITO VADA BENE E VEIDAMO COME VA
+            entityBuilder.addBinaryBody("file",file);
             // MultipartEntity entity = new MultipartEntity();
             //ExifInterface newIntef = new ExifInterface(path);
             //newIntef.setAttribute(ExifInterface.TAG_ORIENTATION,String.valueOf(2));
+            HttpEntity entity = entityBuilder.build();
+            httppost.setEntity(entity);
+            HttpResponse response = httpclient.execute(httppost);
+            HttpEntity httpEntity = response.getEntity();
+            String result = EntityUtils.toString(httpEntity);
+            Log.v("result", result);
 
-            File file = new File(path);
+            /*
+            FileEntity entity = new FileEntity(file);
+
             FormBodyPart part=new FormBodyPart("file",new FileBody(file));
-            //entity.addPart(part);
-            FileEntity entity=new FileEntity(file,"file");
+
             //long totalSize = entity.getContentLength();
             httppost.setEntity(entity);
 
@@ -54,7 +71,7 @@ public class Upload extends AsyncTask<String, Void, Void> {
                         + statusCode + " -> " + response.getStatusLine().getReasonPhrase();
                 Log.d("Log", responseString);
             }
-
+            */
         } catch (ClientProtocolException e) {
             responseString = e.toString();
         } catch (IOException e) {
