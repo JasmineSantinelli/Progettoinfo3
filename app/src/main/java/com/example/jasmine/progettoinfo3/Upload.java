@@ -33,7 +33,7 @@ public class Upload extends AsyncTask<String, Void, Void> {
             //newIntef.setAttribute(ExifInterface.TAG_ORIENTATION,String.valueOf(2));
 
             File file = new File(path);
-            FormBodyPart part=new FormBodyPart("pic",new FileBody(file));
+            FormBodyPart part=new FormBodyPart("file",new FileBody(file));
             //entity.addPart(part);
             FileEntity entity=new FileEntity(file,"pic");
             //long totalSize = entity.getContentLength();
