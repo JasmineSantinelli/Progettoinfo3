@@ -3,6 +3,7 @@ import android.Manifest;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.karumi.dexter.Dexter;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private String path=null;
     private Button btnUpload;
     private Button btn;
+    private TextView text;
     private ImageView imageview;
     private static final String IMAGE_DIRECTORY = "/PROGETTOINFO3";
     private int GALLERY = 1, CAMERA = 2;
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         btn = (Button) findViewById(R.id.btn);
         btnUpload= (Button) findViewById(R.id.btn_upload);
         imageview = (ImageView) findViewById(R.id.iv);
+        text=(TextView) findViewById(R.id.txt);
         //SE PREMO IL BTN RICHIAMA IL METODO PER APRIRE LA FINESTRA DI DIALOGO
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                     path = saveImage(bitmap);
                     Toast.makeText(MainActivity.this, "Image Saved!", Toast.LENGTH_SHORT).show();
                     imageview.setImageBitmap(bitmap);
+                    text.setText(path+"fuck");
                     btnUpload.setVisibility(View.VISIBLE);
                     btn.setText("Modifica inserimento");
                 } catch (IOException e) {
@@ -136,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
             btnUpload.setVisibility(View.VISIBLE);
             btn.setText("Modifica inserimento");
             path=saveImage(thumbnail);
+            text.setText(path+"fottiti");
             Toast.makeText(MainActivity.this, "Image Saved!"+path, Toast.LENGTH_SHORT).show();
         }
     }
