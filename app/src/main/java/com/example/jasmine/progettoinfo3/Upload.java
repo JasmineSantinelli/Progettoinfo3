@@ -35,7 +35,7 @@ public class Upload extends AsyncTask<String, Void, Void> {
             File file = new File(path);
             FormBodyPart part=new FormBodyPart("file",new FileBody(file));
             //entity.addPart(part);
-            FileEntity entity=new FileEntity(file,"pic");
+            FileEntity entity=new FileEntity(file,"file");
             //long totalSize = entity.getContentLength();
             httppost.setEntity(entity);
 
