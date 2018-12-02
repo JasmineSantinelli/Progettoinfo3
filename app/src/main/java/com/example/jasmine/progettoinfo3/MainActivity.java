@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     Location location;
     double longitude = 0;
     double latitude = 0;
-
+    int aw = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
