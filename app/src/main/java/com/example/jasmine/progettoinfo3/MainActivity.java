@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageview;
     private static final String IMAGE_DIRECTORY = "/PROGETTOINFO3";
     private int GALLERY = 1, CAMERA = 2;
-    Location location;
     double longitude = 0;
     double latitude = 0;
     int aw = 0;
@@ -78,26 +77,30 @@ public class MainActivity extends AppCompatActivity {
                 showPictureDialog();
             }
         });
-
+        Location location;
         //location
 
-        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         try {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+            LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            //LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+
             location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            LocationManager locationManager =
-                    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-            boolean networkEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+
+            boolean networkEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
             if(networkEnabled){
-                longitude=location.getLongitude(); // E
-                latitude=location.getLatitude(); // N
+                location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                longitude = location.getLongitude(); // E
+                latitude = location.getLatitude(); // N
+                text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude));
             }
-            text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude));
+
 
         } catch (SecurityException e){
 
-            text.setText("errore (per non dire bestemmie)");
+            text.setText("Dio madonnina :( ");
         }
 
 
