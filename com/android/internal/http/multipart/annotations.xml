@@ -1,0 +1,5 @@
+<root>
+    <item name='com.android.internal.http.multipart.MultipartEntity'>
+        <annotation name='java.lang.Deprecated' />
+    </item>
+</root>
