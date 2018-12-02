@@ -33,7 +33,7 @@ public class Upload extends AsyncTask<String, Void, Void> {
             File file = new File(path);
             MultipartEntityBuilder entityBuilder=MultipartEntityBuilder.create();
             entityBuilder.addBinaryBody("file",file);
-            entityBuilder.addTextBody("long",longitudine);
+            entityBuilder.addTextBody("lon",longitudine);
             entityBuilder.addTextBody("lat",latitudine);
             HttpEntity entity=entityBuilder.build();
             httppost.setEntity(entity);
