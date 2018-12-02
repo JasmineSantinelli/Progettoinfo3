@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (SecurityException e){
 
-            text.setText("Dio madonnina :( ");
+            text.setText("Non funziona, ma io dico no alle bestemmie ");
         }
 
 
@@ -276,6 +276,14 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+//Start maps activity with latitde and longitude as parameters
+
+    public void map(View view) {
+        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+        intent.putExtra("lat",latitude);
+        intent.putExtra("long",longitude);
+        startActivity(intent);
+    }
 }
 
 

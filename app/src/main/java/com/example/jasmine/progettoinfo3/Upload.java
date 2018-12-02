@@ -2,7 +2,6 @@ package com.example.jasmine.progettoinfo3;
 
 import android.os.AsyncTask;
 import android.util.Log;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -11,7 +10,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -25,9 +23,9 @@ public class Upload extends AsyncTask<String, Void, Void> {
         String longitudine=params[1];
         String latitudine=params[2];
 
-       // Log.d("Log", "File path");
+        Log.d("Log", "File path");
         HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost("http://progettoscandurra.andreacavagna.it/caricacellulare");
+        HttpPost httppost = new HttpPost("http://progettoscandurra.andreacavagna.it/caricacellulareunsafe");
 
         try {
             File file = new File(path);
