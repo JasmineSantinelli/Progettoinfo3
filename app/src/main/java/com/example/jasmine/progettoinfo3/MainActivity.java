@@ -1,8 +1,15 @@
 package com.example.jasmine.progettoinfo3;
 import android.Manifest;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.karumi.dexter.Dexter;
@@ -45,9 +52,13 @@ public class MainActivity extends AppCompatActivity {
     private String path=null;
     private Button btnUpload;
     private Button btn;
+    private TextView text;
     private ImageView imageview;
     private static final String IMAGE_DIRECTORY = "/PROGETTOINFO3";
     private int GALLERY = 1, CAMERA = 2;
+    Location location;
+    double longitude = 0;
+    double latitude = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +66,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         requestMultiplePermissions();
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         btn = (Button) findViewById(R.id.btn);
         btnUpload= (Button) findViewById(R.id.btn_upload);
         imageview = (ImageView) findViewById(R.id.iv);
+        text=(TextView) findViewById(R.id.txt);
         //SE PREMO IL BTN RICHIAMA IL METODO PER APRIRE LA FINESTRA DI DIALOGO
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +78,28 @@ public class MainActivity extends AppCompatActivity {
                 showPictureDialog();
             }
         });
+
+        //location
+
+        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        try {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+            location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            LocationManager locationManager =
+                    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            boolean networkEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            if(networkEnabled){
+                longitude=location.getLongitude(); // E
+                latitude=location.getLatitude(); // N
+            }
+            text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude));
+
+        } catch (SecurityException e){
+
+            text.setText("errore (per non dire bestemmie)");
+        }
+
 
     }
 
@@ -122,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
                     path = saveImage(bitmap);
                     Toast.makeText(MainActivity.this, "Image Saved!", Toast.LENGTH_SHORT).show();
                     imageview.setImageBitmap(bitmap);
+                    //mostro path per vedere se va bene
+                    text.setText(path);
                     btnUpload.setVisibility(View.VISIBLE);
                     btn.setText("Modifica inserimento");
                 } catch (IOException e) {
@@ -136,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
             btnUpload.setVisibility(View.VISIBLE);
             btn.setText("Modifica inserimento");
             path=saveImage(thumbnail);
+            //mostro il path per vedere se è giusto
+            text.setText(path);
             Toast.makeText(MainActivity.this, "Image Saved!"+path, Toast.LENGTH_SHORT).show();
         }
     }
@@ -208,9 +247,32 @@ public class MainActivity extends AppCompatActivity {
 
     //change Activity
     public void upload(View view) {
-        new Upload().execute(path);
+        //execute task with parameters of path latitude and longitude
+        String lon=Double.toString(longitude);
+        String lat=Double.toString(latitude);
+        new Upload().execute(path,lon,lat);
     }
+    private final LocationListener mLocationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(final Location location) {
+            //your code here
+        }
 
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
 }
 
 
