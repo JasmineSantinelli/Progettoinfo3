@@ -21,9 +21,11 @@ import java.io.IOException;
 public class Upload extends AsyncTask<String, Void, String> {
     public AsyncResponse delegate=null;
 
+    String risultato = "nessuno";
+
     @Override
     protected String doInBackground(String... params) {
-        String responseString = null;
+        String result;
         //assegnazione parametri
         String path=params[0];
         String longitudine=params[1];
@@ -50,16 +52,17 @@ public class Upload extends AsyncTask<String, Void, String> {
             // Making server call
             HttpResponse response = httpclient.execute(httppost);
             HttpEntity r_entity = response.getEntity();
-            String result=EntityUtils.toString(r_entity);
+            result=EntityUtils.toString(r_entity);
             Log.v("results",result);
+            risultato = result;
             return result;
         } catch (ClientProtocolException e) {
-            responseString = e.toString();
-            Log.v("exception",responseString);
+            result = e.toString();
+            Log.v("exception",result);
             return "errore";
         } catch (IOException e) {
-            responseString = e.toString();
-            Log.v("exception",responseString);
+            result = e.toString();
+            Log.v("exception",result);
             return "errore";
 
         }
@@ -67,6 +70,7 @@ public class Upload extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
+
         delegate.processFinish(result);
     }
 

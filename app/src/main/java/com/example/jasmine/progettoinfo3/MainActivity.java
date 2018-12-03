@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
         //execute task with parameters of path latitude and longitude
         String lon=Double.toString(longitude);
         String lat=Double.toString(latitude);
-        new Upload().execute(path,lon,lat);
+        asyncTask.execute(path,lon,lat);
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -281,8 +281,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
 
      public void processFinish(String output){
 
-        //this you will received result fired from async class of onPostExecute(result) method.
-    }
+
+         Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();    }
 
 }
 
