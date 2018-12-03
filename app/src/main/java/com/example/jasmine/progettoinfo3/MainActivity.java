@@ -47,7 +47,7 @@ import java.util.List;
 
 import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AsyncResponse{
     //Declaration
     private String path=null;
     private Button btnUpload;
@@ -56,9 +56,12 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageview;
     private static final String IMAGE_DIRECTORY = "/PROGETTOINFO3";
     private int GALLERY = 1, CAMERA = 2;
+    Location location;
     double longitude = 0;
     double latitude = 0;
-    int aw = 0;
+
+    Upload asyncTask =new Upload();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -66,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         requestMultiplePermissions();
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        asyncTask.delegate = this;
+
         btn = (Button) findViewById(R.id.btn);
         btnUpload= (Button) findViewById(R.id.btn_upload);
         imageview = (ImageView) findViewById(R.id.iv);
@@ -77,30 +82,26 @@ public class MainActivity extends AppCompatActivity {
                 showPictureDialog();
             }
         });
-        Location location;
+
         //location
 
+        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         try {
-            LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            //LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-
-            location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
-
-            boolean networkEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            LocationManager locationManager =
+                    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            boolean networkEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
             if(networkEnabled){
-                location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                longitude = location.getLongitude(); // E
-                latitude = location.getLatitude(); // N
-                text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude));
+                longitude=location.getLongitude(); // E
+                latitude=location.getLatitude(); // N
             }
-
+            text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude));
 
         } catch (SecurityException e){
 
-            text.setText("Non funziona, ma io dico no alle bestemmie ");
+            text.setText("errore (per non dire bestemmie)");
         }
 
 
@@ -195,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             File f = new File(wallpaperDirectory, Calendar.getInstance()
-                    .getTimeInMillis() + ".jpeg");
+                    .getTimeInMillis() + ".jpg");
             f.createNewFile();
             FileOutputStream fo = new FileOutputStream(f);
             fo.write(bytes.toByteArray());
@@ -255,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
         String lat=Double.toString(latitude);
         new Upload().execute(path,lon,lat);
     }
+
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
         public void onLocationChanged(final Location location) {
@@ -276,14 +278,12 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
-//Start maps activity with latitde and longitude as parameters
 
-    public void map(View view) {
-        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-        intent.putExtra("lat",latitude);
-        intent.putExtra("long",longitude);
-        startActivity(intent);
+     public void processFinish(String output){
+
+        //this you will received result fired from async class of onPostExecute(result) method.
     }
+
 }
 
 
