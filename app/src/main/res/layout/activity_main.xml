@@ -42,14 +42,30 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:visibility="invisible" />
 
-    <Button
-        android:id="@+id/btn_map"
-        android:layout_width="367dp"
-        android:layout_height="64dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:onClick="map"
-        android:text="Visualizza mappa"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:backgroundTint="@color/colorAccent"
+            android:onClick="button_aggiornaPosix"
+            android:text="Aggiorna posizione" />
+
+        <Button
+            android:id="@+id/btn_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:backgroundTint="@color/colorAccent"
+            android:onClick="map"
+            android:text="Visualizza mappa"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Looper;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -47,7 +50,7 @@ import java.util.List;
 
 import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 
-public class MainActivity extends AppCompatActivity implements AsyncResponse{
+public class MainActivity extends AppCompatActivity implements AsyncResponse {
     //Declaration
     private String path=null;
     private Button btnUpload;
@@ -60,7 +63,10 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
     double longitude = 0;
     double latitude = 0;
 
-    Upload asyncTask =new Upload();
+    private FusedLocationProviderClient mFusedLocationClient;
+
+
+    Upload asyncTask = new Upload();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,26 +91,41 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
 
         //location
 
-        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        aggiornaPosix();
+
+    }
+
+    public void button_aggiornaPosix(View view){
+        aggiornaPosix();
+    }
+
+    void aggiornaPosix(){
+
         try {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+
+            //mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            //mFusedLocationClient.getLastLocation();
+            LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+            LocationListener mLocListener = new MyLocationListener();
+
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocListener);
+            //mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER,mLocationListener,Looper.getMainLooper());
+
             location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            LocationManager locationManager =
-                    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-            boolean networkEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            boolean networkEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
             if(networkEnabled){
                 longitude=location.getLongitude(); // E
                 latitude=location.getLatitude(); // N
             }
             text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude));
-
+            Toast.makeText(this, "Posizione aggiornata", Toast.LENGTH_SHORT).show();
         } catch (SecurityException e){
 
             text.setText("errore (per non dire bestemmie)");
         }
-
-
     }
 
     //select between camera or gallery to upload an image
@@ -260,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
         public void onLocationChanged(final Location location) {
-            //your code here
+            aggiornaPosix();
         }
 
         @Override
@@ -270,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
 
         @Override
         public void onProviderEnabled(String provider) {
-
+            aggiornaPosix();
         }
 
         @Override
@@ -283,6 +304,27 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
 
 
          Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();    }
+
+
+    public class MyLocationListener implements LocationListener{
+
+        public void onLocationChanged(Location loc) {
+            String message = String.format(
+                    "New Location \n Longitude: %1$s \n Latitude: %2$s",
+                    location.getLongitude(), location.getLatitude()
+            );
+            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+        }
+        public void onProviderDisabled(String arg0) {
+
+        }
+        public void onProviderEnabled(String provider) {
+
+        }
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+    }
 
 }
 
