@@ -22,25 +22,19 @@ public class RequestForMap extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... params) {
         String result;
         //assegnazione parametri
-        String path=params[0];
-        String longitudine=params[1];
-        String latitudine=params[2];
+        String longitudine=params[0];
+        String latitudine=params[1];
 
-        Log.d("Log", "latitudine" + latitudine + "longitudine" + longitudine);
+      //  Log.d("Log", "latitudine" + latitudine + "longitudine" + longitudine);
         HttpClient httpclient = new DefaultHttpClient();
         HttpPost httppost = new HttpPost("http://progettoscandurra.andreacavagna.it/richiestabuche");
 
         try {
-            File file = new File(path);
             MultipartEntityBuilder entityBuilder=MultipartEntityBuilder.create();
-
-            //entityBuilder.addBinaryBody("file", bytes);
-            entityBuilder.addBinaryBody("file",file);
+            //dopo vanno aggiunti gli estremi per capire in che zona visulizzare
             entityBuilder.addTextBody("lon",longitudine);
             entityBuilder.addTextBody("lat",latitudine);
 
-            //entityBuilder.addPart("lon", new StringBody("1234", contentType));
-            //entityBuilder.addTextBody("lat","3456",ContentType.TEXT_PLAIN);
             HttpEntity entity=entityBuilder.build();
             httppost.setEntity(entity);
 
@@ -67,7 +61,6 @@ public class RequestForMap extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String result) {
         delegate.processFinish(result);
     }
-
 
 }
 

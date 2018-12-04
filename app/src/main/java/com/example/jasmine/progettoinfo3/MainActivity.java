@@ -287,8 +287,6 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     };
 
      public void processFinish(String output){
-
-
          Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();    }
 
     public void map(View view) {
