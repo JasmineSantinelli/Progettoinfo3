@@ -10,13 +10,15 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,AsyncResponse{
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,OnCameraMoveListener,AsyncResponse{
 
     private GoogleMap mMap;
     double latitudine=0;
@@ -46,28 +48,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        LatLng io = new LatLng(latitudine,longitudine);
-        mMap.addMarker(new MarkerOptions().position(io).title("SONO QUI!FUCK YEAH"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(io));
-        mMap.moveCamera(CameraUpdateFactory.zoomBy(10));
-        LatLngBounds curScreen = mMap.getProjection().getVisibleRegion().latLngBounds;
-       // Toast.makeText(this,"N" + curScreen.northeast.latitude + curScreen.northeast.longitude + "E" + curScreen.southwest.longitude+ curScreen.southwest.latitude, Toast.LENGTH_SHORT).show();
-        String lon=Double.toString(longitudine);
-        String lat=Double.toString(latitudine);
-        String upN = Double.toString(curScreen.northeast.longitude);
-        String upE = Double.toString(curScreen.northeast.latitude);
-        String downN = Double.toString(curScreen.southwest.longitude);
-        String downE = Double.toString(curScreen.northeast.latitude);
-        asyncTask.execute(lon,lat,upN,upE,downN,downE);
-    }
 
-    public void back(View view) {
-        Intent intent=new Intent(this,MainActivity.class);
-        startActivity(intent);
-    }
 
     @Override
     public void processFinish(String output) {
@@ -78,9 +59,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             for (String aStringa : stringa) {
                 Toast.makeText(this, aStringa, Toast.LENGTH_SHORT).show();
                 elemento = aStringa.split(",");
-                if (elemento.length == 3) {
+                if (elemento.length == 3 && !(elemento[1]).equals("None") && !(elemento[2]).equals("None")) {
                     LatLng x = new LatLng(Double.valueOf(elemento[1]), Double.valueOf(elemento[2]));
-                    mMap.addMarker(new MarkerOptions().position(x).title("Io sono" + elemento[0]));
+                    switch (elemento[0]){
+                        case "buca":
+                            mMap.addMarker(new MarkerOptions().position(x).title("Io sono una " + elemento[0]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
+                            break;
+                        case "fessura":
+                            mMap.addMarker(new MarkerOptions().position(x).title("Io sono una " + elemento[0]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                            break;
+                        case "rappezzo":
+                            mMap.addMarker(new MarkerOptions().position(x).title("Io sono un " + elemento[0]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                            break;
+                        case "tombino":
+                            mMap.addMarker(new MarkerOptions().position(x).title("Io sono un " + elemento[0]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                            break;
+                    }
+
                 }
             }
     }
@@ -88,5 +83,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toast.makeText(this, "Stringa vuota", Toast.LENGTH_SHORT).show();
 
     }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        LatLng io = new LatLng(latitudine,longitudine);
+        mMap.addMarker(new MarkerOptions().position(io).title("IO SONO QUI!"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(io,13));
+        setParameterToRequest();
+    }
+
+    @Override
+    public void onCameraMove(){
+       setParameterToRequest();
+        Toast.makeText(this, "The camera is moving.",Toast.LENGTH_SHORT).show();
+    }
+
+    public void setParameterToRequest(){
+        LatLngBounds curScreen = mMap.getProjection().getVisibleRegion().latLngBounds;
+        String lon=Double.toString(longitudine);
+        String lat=Double.toString(latitudine);
+        String upN = Double.toString(curScreen.northeast.longitude);
+        String upE = Double.toString(curScreen.northeast.latitude);
+        String downN = Double.toString(curScreen.southwest.longitude);
+        String downE = Double.toString(curScreen.southwest.latitude);
+       // Toast.makeText(this, lon + lat+upN+upE+downN+downE, Toast.LENGTH_SHORT).show();
+        asyncTask.execute(lon,lat,upN,upE,downN,downE);
+    }
+//back to main
+    public void back(View view) {
+        Intent intent=new Intent(this,MainActivity.class);
+        startActivity(intent);
+    }
+
+
 
 }
