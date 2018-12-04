@@ -1,20 +1,27 @@
 package com.example.jasmine.progettoinfo3;
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Looper;
-import android.provider.ContactsContract;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.widget.LinearLayout;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -22,35 +29,14 @@ import com.karumi.dexter.listener.DexterError;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 
-import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
-
-public class MainActivity extends AppCompatActivity implements AsyncResponse {
+public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     //Declaration
     private String path=null;
     private Button btnUpload;
@@ -207,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     //save image in specified directory
     public String saveImage(Bitmap myBitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        myBitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        myBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         File wallpaperDirectory = new File(
                 Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
         // have the object build the directory structure, if needed.
@@ -305,6 +291,12 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
          Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();    }
 
+    public void map(View view) {
+        Intent intent=new Intent(this,MapsActivity.class);
+        intent.putExtra("lat",latitude);
+        intent.putExtra("long",longitude);
+        startActivity(intent);
+    }
 
     public class MyLocationListener implements LocationListener{
 

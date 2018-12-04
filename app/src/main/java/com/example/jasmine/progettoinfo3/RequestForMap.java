@@ -1,26 +1,21 @@
 package com.example.jasmine.progettoinfo3;
 
+
 import android.os.AsyncTask;
 import android.util.Log;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
 import java.io.File;
 import java.io.IOException;
 
-public class Upload extends AsyncTask<String, Void, String> {
+public class RequestForMap extends AsyncTask<String, Void, String> {
     public AsyncResponse delegate=null;
-
     String risultato = "nessuno";
 
     @Override
@@ -33,7 +28,7 @@ public class Upload extends AsyncTask<String, Void, String> {
 
         Log.d("Log", "latitudine" + latitudine + "longitudine" + longitudine);
         HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost("http://progettoscandurra.andreacavagna.it/caricacellulare");
+        HttpPost httppost = new HttpPost("http://progettoscandurra.andreacavagna.it/richiestabuche");
 
         try {
             File file = new File(path);
@@ -75,5 +70,4 @@ public class Upload extends AsyncTask<String, Void, String> {
 
 
 }
-
 
