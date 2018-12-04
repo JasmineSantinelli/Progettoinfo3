@@ -299,7 +299,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     public void map(View view) {
         Intent intent=new Intent(this,MapsActivity.class);
         intent.putExtra("lat",latitude);
-        intent.putExtra("long",longitude);
+        intent.putExtra("lon",longitude);
         startActivity(intent);
     }
 

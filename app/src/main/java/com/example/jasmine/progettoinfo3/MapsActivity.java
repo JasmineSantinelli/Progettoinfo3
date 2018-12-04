@@ -21,8 +21,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,OnCameraMoveListener,AsyncResponse{
 
     private GoogleMap mMap;
-    double latitudine=0;
-    double longitudine=0;
+    double latitudine;
+    double longitudine;
     RequestForMap asyncTask = new RequestForMap();
 
     @Override
@@ -33,40 +33,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         latitudine=getIntent().getDoubleExtra("lat",0);
         longitudine=getIntent().getDoubleExtra("lon",0);
+        Toast.makeText(this, Double.toString(latitudine)+Double.toString(longitudine), Toast.LENGTH_SHORT).show();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-
-
     @Override
     public void processFinish(String output) {
-        Toast.makeText(this, output, Toast.LENGTH_SHORT).show();
         String[] stringa=output.split("-");
         String[] elemento;
         if (stringa.length!=0){
             for (String aStringa : stringa) {
-                Toast.makeText(this, aStringa, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(this, aStringa, Toast.LENGTH_SHORT).show();
                 elemento = aStringa.split(",");
                 if (elemento.length == 3 && !(elemento[1]).equals("None") && !(elemento[2]).equals("None")) {
                     LatLng x = new LatLng(Double.valueOf(elemento[1]), Double.valueOf(elemento[2]));
                     switch (elemento[0]){
                         case "buca":
-                            mMap.addMarker(new MarkerOptions().position(x).title("Io sono una " + elemento[0]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
+                            mMap.addMarker(new MarkerOptions().position(x).title("Io sono una " + elemento[0]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
                             break;
                         case "fessura":
-                            mMap.addMarker(new MarkerOptions().position(x).title("Io sono una " + elemento[0]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                            mMap.addMarker(new MarkerOptions().position(x).title("Io sono una " + elemento[0]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
                             break;
                         case "rappezzo":
                             mMap.addMarker(new MarkerOptions().position(x).title("Io sono un " + elemento[0]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
@@ -88,7 +77,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         LatLng io = new LatLng(latitudine,longitudine);
-        mMap.addMarker(new MarkerOptions().position(io).title("IO SONO QUI!"));
+        mMap.addMarker(new MarkerOptions().position(io).title("Io sono qui!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(io,13));
         setParameterToRequest();
     }
@@ -96,7 +85,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onCameraMove(){
        setParameterToRequest();
-        Toast.makeText(this, "The camera is moving.",Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, "The camera is moving.",Toast.LENGTH_SHORT).show();
     }
 
     public void setParameterToRequest(){
