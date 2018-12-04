@@ -53,7 +53,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.moveCamera(CameraUpdateFactory.newLatLng(io));
 
         LatLngBounds curScreen = mMap.getProjection().getVisibleRegion().latLngBounds;
-        Toast.makeText(this,"N" + curScreen.northeast.latitude + curScreen.northeast.longitude + "E" + curScreen.southwest.longitude+ curScreen.southwest.latitude, Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this,"N" + curScreen.northeast.latitude + curScreen.northeast.longitude + "E" + curScreen.southwest.longitude+ curScreen.southwest.latitude, Toast.LENGTH_SHORT).show();
         String lon=Double.toString(longitudine);
         String lat=Double.toString(latitudine);
         String upN = Double.toString(curScreen.northeast.longitude);
@@ -73,13 +73,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toast.makeText(this, output, Toast.LENGTH_SHORT).show();
         String[] stringa=output.split("-");
         String[] elemento;
-        for (int i=0;i<stringa.length;i++) {
-            Toast.makeText(this, stringa[i], Toast.LENGTH_SHORT).show();
+        if (stringa.length!=0){
+            for (String aStringa : stringa) {
+                Toast.makeText(this, aStringa, Toast.LENGTH_SHORT).show();
+                elemento = aStringa.split(",");
+                if (elemento.length == 3) {
+                    LatLng x = new LatLng(Double.valueOf(elemento[1]), Double.valueOf(elemento[2]));
+                    mMap.addMarker(new MarkerOptions().position(x).title("Io sono" + elemento[0]));
+                }
+            }
+    }
+        else
+        Toast.makeText(this, "Stringa vuota", Toast.LENGTH_SHORT).show();
 
-            elemento=stringa[i].split("|");
-            LatLng x=new LatLng(Double.valueOf(elemento[1]),Double.valueOf(elemento[2]));
-            mMap.addMarker(new MarkerOptions().position(x).title("io sono un" + elemento[0]));
-        }
     }
 
 }
