@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         requestMultiplePermissions();
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
 
         btn = (Button) findViewById(R.id.btn);
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             LocationListener mLocListener = new MyLocationListener();
             LocationListener mLocListener2 = new MyLocationListener();
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocListener);
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocListener);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocListener2);
 
             //mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER,mLocationListener,Looper.getMainLooper());
 
@@ -115,8 +115,18 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                }
                 longitude=location.getLongitude(); // E
                 latitude=location.getLatitude(); // N
+                text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude)+l);
+            } else {
+                if (gpsEnabled){
+                    location = gps_loc;
+                    l = "gps";
+                } else if (networkEnabled){
+                    location = net_loc;
+                    l = "net";
+                } else {
+                    text.setText("Posizione non trovata :(");
+                }
             }
-            text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude)+l);
             //Toast.makeText(this, "Posizione aggiornata", Toast.LENGTH_SHORT).show();
         } catch (SecurityException e){
 
@@ -176,7 +186,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
                     path = saveImage(bitmap);
-                    Toast.makeText(MainActivity.this, "Image Saved!", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Image Saved!", Toast.LENGTH_SHORT).show();
                     imageview.setImageBitmap(bitmap);
                     //mostro path per vedere se va bene
                     text.setText(path);
@@ -184,7 +194,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                     btn.setText("Modifica inserimento");
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(MainActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -196,7 +206,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             path=saveImage(thumbnail);
             //mostro il path per vedere se è giusto
             text.setText(path);
-            Toast.makeText(MainActivity.this, "Image Saved!"+path, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, "Image Saved!"+path, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -234,13 +244,16 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                 .withPermissions(
                         Manifest.permission.CAMERA,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+
                 .withListener(new MultiplePermissionsListener() {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
                         // check if all permissions are granted
                         if (report.areAllPermissionsGranted()) {
-                            Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(getApplicationContext(), "All permissions are granted by user!", Toast.LENGTH_SHORT).show();
                         }
 
                         // check for permanent denial of any permission
@@ -299,7 +312,8 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     };
 
      public void processFinish(String output){
-         Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();    }
+         //Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();
+         }
 
     public void map(View view) {
         Intent intent=new Intent(this,MapsActivity.class);
@@ -315,7 +329,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                     "New Location \n Longitude: %1$s \n Latitude: %2$s",
                     location.getLongitude(), location.getLatitude()
             );
-            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+           // Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
         }
         public void onProviderDisabled(String arg0) {
 
