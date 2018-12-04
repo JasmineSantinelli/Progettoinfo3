@@ -35,7 +35,7 @@ public class RequestForMap extends AsyncTask<String, Void, String> {
 
         try {
             MultipartEntityBuilder entityBuilder=MultipartEntityBuilder.create();
-            //dopo vanno aggiunti gli estremi per capire in che zona visulizzare
+
             entityBuilder.addTextBody("lon",longitudine);
             entityBuilder.addTextBody("lat",latitudine);
             entityBuilder.addTextBody("upN",upN);

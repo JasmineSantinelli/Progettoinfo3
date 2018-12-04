@@ -18,8 +18,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,AsyncResponse{
 
     private GoogleMap mMap;
-    double latitudine;
-    double longitudine;
+    double latitudine=0;
+    double longitudine=0;
     RequestForMap asyncTask = new RequestForMap();
 
     @Override
@@ -27,18 +27,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         asyncTask.delegate = this;
+
         latitudine=getIntent().getDoubleExtra("lat",0);
         longitudine=getIntent().getDoubleExtra("lon",0);
-        String lon=Double.toString(longitudine);
-        String lat=Double.toString(latitudine);
-        LatLngBounds curScreen = mMap.getProjection()
-                .getVisibleRegion().latLngBounds;
-        String upN = Double.toString(curScreen.northeast.longitude);
-        String upE = Double.toString(curScreen.northeast.latitude);
-        String downN = Double.toString(curScreen.southwest.longitude);
-        String downE = Double.toString(curScreen.northeast.latitude);
-        asyncTask.execute(lon,lat,upN,upE,downN,downE);
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -57,10 +48,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         LatLng io = new LatLng(latitudine,longitudine);
         mMap.addMarker(new MarkerOptions().position(io).title("SONO QUI!FUCK YEAH"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(io));
+
+        LatLngBounds curScreen = mMap.getProjection().getVisibleRegion().latLngBounds;
+        Toast.makeText(this,"N" + curScreen.northeast.latitude + curScreen.northeast.longitude + "E" + curScreen.southwest.longitude+ curScreen.southwest.latitude, Toast.LENGTH_SHORT).show();
+        String lon=Double.toString(longitudine);
+        String lat=Double.toString(latitudine);
+        String upN = Double.toString(curScreen.northeast.longitude);
+        String upE = Double.toString(curScreen.northeast.latitude);
+        String downN = Double.toString(curScreen.southwest.longitude);
+        String downE = Double.toString(curScreen.northeast.latitude);
+        asyncTask.execute(lon,lat,upN,upE,downN,downE);
     }
 
     public void back(View view) {
@@ -71,6 +71,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void processFinish(String output) {
         Toast.makeText(this, output, Toast.LENGTH_SHORT).show();
-        
+        String[] stringa=output.split("-");
+        String[] elemento;
+        for (int i=0;i<stringa.length;i++) {
+            Toast.makeText(this, stringa[i], Toast.LENGTH_SHORT).show();
+
+            elemento=stringa[i].split("|");
+            LatLng x=new LatLng(Double.valueOf(elemento[1]),Double.valueOf(elemento[2]));
+            mMap.addMarker(new MarkerOptions().position(x).title("io sono un" + elemento[0]));
+        }
     }
+
 }
