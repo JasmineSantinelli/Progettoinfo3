@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     double longitude = 0;
     double latitude = 0;
 
-    private FusedLocationProviderClient mFusedLocationClient;
+    //private FusedLocationProviderClient mFusedLocationClient;
 
 
     Upload asyncTask = new Upload();
@@ -93,9 +93,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             //mFusedLocationClient.getLastLocation();
             LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-            LocationListener mLocListener = new MyLocationListener();
-
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocListener);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
             //mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER,mLocationListener,Looper.getMainLooper());
 
             location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -267,7 +265,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
         public void onLocationChanged(final Location location) {
-            aggiornaPosix();
+
         }
 
         @Override
@@ -296,7 +294,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         startActivity(intent);
     }
 
-    public class MyLocationListener implements LocationListener{
+    /*public class MyLocationListener implements LocationListener{
 
         public void onLocationChanged(Location loc) {
             String message = String.format(
@@ -314,7 +312,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         public void onStatusChanged(String provider, int status, Bundle extras) {
 
         }
-    }
+    }*/
 
 }
 
