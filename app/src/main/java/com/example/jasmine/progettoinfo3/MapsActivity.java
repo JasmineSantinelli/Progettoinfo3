@@ -20,14 +20,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     double latitudine;
     double longitudine;
     RequestForMap asyncTask = new RequestForMap();
-    asyncTask.delegate = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        asyncTask.delegate = this;
         latitudine=getIntent().getDoubleExtra("lat",0);
-        longitudine=getIntent().getDoubleExtra("long",0);
+        longitudine=getIntent().getDoubleExtra("lon",0);
         String lon=Double.toString(longitudine);
         String lat=Double.toString(latitudine);
         asyncTask.execute(lon,lat);
@@ -64,5 +64,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void processFinish(String output) {
         Toast.makeText(this, output, Toast.LENGTH_SHORT).show();
+        
     }
 }
