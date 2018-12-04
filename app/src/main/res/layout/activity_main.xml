@@ -23,7 +23,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:scaleType="fitXY"
-        tools:src="@mipmap/ic_launcher" />
+        android:src="@mipmap/prova" />
 
     <TextView
         android:id="@+id/txt"

@@ -48,7 +48,7 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".RequestForMap"></activity>
+        <activity android:name=".RequestForMap" />
     </application>
 
 </manifest>
