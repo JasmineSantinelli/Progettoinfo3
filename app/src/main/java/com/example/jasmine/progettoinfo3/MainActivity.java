@@ -86,23 +86,30 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     }
 
     void aggiornaPosix(){
+        LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         try {
 
             //mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
             //mFusedLocationClient.getLastLocation();
-            LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
             LocationListener mLocListener = new MyLocationListener();
-
+            LocationListener mLocListener2 = new MyLocationListener();
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocListener);
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocListener);
+
             //mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER,mLocationListener,Looper.getMainLooper());
 
-            location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            //location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location gps_loc = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location net_loc = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            boolean networkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            if (gpsEnabled && networkEnabled) {
+                if (gps_loc.getAccuracy() > net_loc.getAccuracy())
+                    location = net_loc;
+                else
+                    location = gps_loc;
 
-            boolean networkEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            if(networkEnabled){
                 longitude=location.getLongitude(); // E
                 latitude=location.getLatitude(); // N
             }
