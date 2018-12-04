@@ -24,6 +24,10 @@ public class RequestForMap extends AsyncTask<String, Void, String> {
         //assegnazione parametri
         String longitudine=params[0];
         String latitudine=params[1];
+        String upN=params[2];
+        String upE=params[3];
+        String downN=params[4];
+        String downE=params[5];
 
       //  Log.d("Log", "latitudine" + latitudine + "longitudine" + longitudine);
         HttpClient httpclient = new DefaultHttpClient();
@@ -34,7 +38,10 @@ public class RequestForMap extends AsyncTask<String, Void, String> {
             //dopo vanno aggiunti gli estremi per capire in che zona visulizzare
             entityBuilder.addTextBody("lon",longitudine);
             entityBuilder.addTextBody("lat",latitudine);
-
+            entityBuilder.addTextBody("upN",upN);
+            entityBuilder.addTextBody("upE",upE);
+            entityBuilder.addTextBody("downN",downN);
+            entityBuilder.addTextBody("downE",downE);
             HttpEntity entity=entityBuilder.build();
             httppost.setEntity(entity);
 

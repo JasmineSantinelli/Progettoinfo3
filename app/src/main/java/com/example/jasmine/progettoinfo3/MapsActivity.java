@@ -12,6 +12,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,AsyncResponse{
@@ -30,7 +31,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         longitudine=getIntent().getDoubleExtra("lon",0);
         String lon=Double.toString(longitudine);
         String lat=Double.toString(latitudine);
-        asyncTask.execute(lon,lat);
+        LatLngBounds curScreen = mMap.getProjection()
+                .getVisibleRegion().latLngBounds;
+        String upN = Double.toString(curScreen.northeast.longitude);
+        String upE = Double.toString(curScreen.northeast.latitude);
+        String downN = Double.toString(curScreen.southwest.longitude);
+        String downE = Double.toString(curScreen.northeast.latitude);
+        asyncTask.execute(lon,lat,upN,upE,downN,downE);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
