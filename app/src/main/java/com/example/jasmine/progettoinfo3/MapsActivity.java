@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -51,7 +52,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng io = new LatLng(latitudine,longitudine);
         mMap.addMarker(new MarkerOptions().position(io).title("SONO QUI!FUCK YEAH"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(io));
-
+        mMap.moveCamera(CameraUpdateFactory.zoomBy(10));
         LatLngBounds curScreen = mMap.getProjection().getVisibleRegion().latLngBounds;
        // Toast.makeText(this,"N" + curScreen.northeast.latitude + curScreen.northeast.longitude + "E" + curScreen.southwest.longitude+ curScreen.southwest.latitude, Toast.LENGTH_SHORT).show();
         String lon=Double.toString(longitudine);
