@@ -11,6 +11,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener;
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -18,22 +19,24 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,OnCameraMoveListener,AsyncResponse{
+import static com.google.android.gms.maps.GoogleMap.*;
+
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,AsyncResponse,OnCameraIdleListener {
 
     private GoogleMap mMap;
     double latitudine;
     double longitudine;
-    RequestForMap asyncTask = new RequestForMap();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        asyncTask.delegate = this;
+
 
         latitudine=getIntent().getDoubleExtra("lat",0);
         longitudine=getIntent().getDoubleExtra("lon",0);
-        Toast.makeText(this, Double.toString(latitudine)+Double.toString(longitudine), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, Double.toString(latitudine)+Double.toString(longitudine), Toast.LENGTH_SHORT).show();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -76,27 +79,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnCameraIdleListener(this);
         LatLng io = new LatLng(latitudine,longitudine);
         mMap.addMarker(new MarkerOptions().position(io).title("Io sono qui!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(io,13));
-        setParameterToRequest();
     }
 
-    @Override
-    public void onCameraMove(){
-       setParameterToRequest();
-       // Toast.makeText(this, "The camera is moving.",Toast.LENGTH_SHORT).show();
-    }
 
     public void setParameterToRequest(){
         LatLngBounds curScreen = mMap.getProjection().getVisibleRegion().latLngBounds;
         String lon=Double.toString(longitudine);
         String lat=Double.toString(latitudine);
-        String upN = Double.toString(curScreen.northeast.longitude);
-        String upE = Double.toString(curScreen.northeast.latitude);
-        String downN = Double.toString(curScreen.southwest.longitude);
-        String downE = Double.toString(curScreen.southwest.latitude);
-       // Toast.makeText(this, lon + lat+upN+upE+downN+downE, Toast.LENGTH_SHORT).show();
+        String upN = Double.toString(curScreen.northeast.latitude);
+        String upE = Double.toString(curScreen.northeast.longitude);
+        String downN = Double.toString(curScreen.southwest.latitude);
+        String downE = Double.toString(curScreen.southwest.longitude);
+        //Toast.makeText(this,upN+"    "+upE+"     "+downN+"    "+downE, Toast.LENGTH_LONG).show();
+        RequestForMap asyncTask = new RequestForMap();
+        asyncTask.delegate = this;
         asyncTask.execute(lon,lat,upN,upE,downN,downE);
     }
 //back to main
@@ -106,5 +106,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-
+    @Override
+    public void onCameraIdle() {
+        setParameterToRequest();
+    }
 }

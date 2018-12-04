@@ -48,11 +48,11 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     Location location;
     double longitude = 0;
     double latitude = 0;
-
+    String l;
     private FusedLocationProviderClient mFusedLocationClient;
 
 
-    Upload asyncTask = new Upload();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         setContentView(R.layout.activity_main);
         requestMultiplePermissions();
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        asyncTask.delegate = this;
+
 
         btn = (Button) findViewById(R.id.btn);
         btnUpload= (Button) findViewById(R.id.btn_upload);
@@ -105,16 +105,19 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean networkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
             if (gpsEnabled && networkEnabled) {
-                if (gps_loc.getAccuracy() > net_loc.getAccuracy())
+               if (gps_loc.getAccuracy() < net_loc.getAccuracy()) {
                     location = net_loc;
-                else
-                    location = gps_loc;
-
+                    l="net";
+               }
+                else {
+                   location = gps_loc;
+                   l = "gps";
+               }
                 longitude=location.getLongitude(); // E
                 latitude=location.getLatitude(); // N
             }
-            text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude));
-            Toast.makeText(this, "Posizione aggiornata", Toast.LENGTH_SHORT).show();
+            text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude)+l);
+            //Toast.makeText(this, "Posizione aggiornata", Toast.LENGTH_SHORT).show();
         } catch (SecurityException e){
 
             text.setText("errore (per non dire bestemmie)");
@@ -266,6 +269,8 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     //change Activity
     public void upload(View view) {
         //execute task with parameters of path latitude and longitude
+        Upload asyncTask = new Upload();
+        asyncTask.delegate = this;
         String lon=Double.toString(longitude);
         String lat=Double.toString(latitude);
         asyncTask.execute(path,lon,lat);

@@ -13,6 +13,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
         android:text="Seleziona o scatta una foto"
+        android:backgroundTint="@color/colorAccent"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ImageView
@@ -22,7 +23,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:scaleType="fitXY"
-        tools:src="@mipmap/prova" />
+        tools:src="@mipmap/ic_launcher" />
 
     <TextView
         android:id="@+id/txt"
@@ -38,6 +39,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="10dp"
         android:onClick="upload"
+        android:backgroundTint="@color/colorAccent"
         android:text="Scopri che dissesto sei"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:visibility="invisible" />
