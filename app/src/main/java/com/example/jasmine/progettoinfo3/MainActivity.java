@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     private String path=null;
     private Button btnUpload;
     private Button btn;
-    private TextView text;
+    private TextView text,text1,text2,text3,text4;
     private ImageView imageview;
     private static final String IMAGE_DIRECTORY = "/PROGETTOINFO3";
     private int GALLERY = 1, CAMERA = 2;
@@ -73,8 +75,13 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
 
         btn = (Button) findViewById(R.id.btn);
         btnUpload= (Button) findViewById(R.id.btn_upload);
+        btnUpload.setBackgroundResource(R.color.colorAccent);
         imageview = (ImageView) findViewById(R.id.iv);
         text=(TextView) findViewById(R.id.txt);
+        text1 = findViewById(R.id.textView);
+        text2 = findViewById(R.id.textView2);
+        text3 = findViewById(R.id.textView7);
+        text4 = findViewById(R.id.textView8);
         //SE PREMO IL BTN RICHIAMA IL METODO PER APRIRE LA FINESTRA DI DIALOGO
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,9 +130,12 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                }
                 longitude=location.getLongitude(); // E
                 latitude=location.getLatitude(); // N
-                text.setText("LNG E: " + Double.toString(longitude) + " ||  LAT N: " + Double.toString(latitude)
-                + "GPS ACC : "+  Double.toString(gps_loc.getAccuracy()) + " || NET ACC : " + Double.toString(net_loc.getAccuracy()) + " | USING : " + l);
-            } else {
+                text1.setText("LAT : " + Double.toString(latitude));
+                text2.setText("LON : " + Double.toString(longitude));
+                text3.setText("NET Accuracy : " + String.format("%.2f", net_loc.getAccuracy()));
+                text4.setText("GPS Accuracy : " + String.format("%.2f", gps_loc.getAccuracy()));
+
+                } else {
                 if (gpsEnabled){
                     location = gps_loc;
                     l = "gps";
@@ -133,13 +143,13 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                     location = net_loc;
                     l = "net";
                 } else {
-                    text.setText("Posizione non trovata :(");
+                    Toast.makeText(this, "Posizione non trovata :(", Toast.LENGTH_SHORT).show();
                 }
             }
             //Toast.makeText(this, "Posizione aggiornata", Toast.LENGTH_SHORT).show();
         } catch (SecurityException e){
+            Toast.makeText(this, "errore (per non dire bestemmie)" , Toast.LENGTH_SHORT).show();
 
-            text.setText("errore (per non dire bestemmie)");
         }
     }
 
@@ -147,6 +157,8 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     private void showPictureDialog(){
         AlertDialog.Builder pictureDialog = new AlertDialog.Builder(this);
         pictureDialog.setTitle("Cosa vuoi fare?");
+        btnUpload.setClickable(true);
+        btnUpload.setText("Scopri quanto fai cagare");
         String[] pictureDialogItems = {
                 "Seleziona una foto dalla galleria",
                 "Scatta una foto" };
@@ -239,12 +251,13 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             if (data != null) {
                 Uri contentURI = data.getData();
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
-                    path = saveImage(bitmap);
+                    Bitmap bMap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
+                    mCurrentPhotoPath = saveImage(bMap);
                     //Toast.makeText(MainActivity.this, "Image Saved!", Toast.LENGTH_SHORT).show();
-                    imageview.setImageBitmap(bitmap);
+                    //bMap = RotateBitmap(bMap,90);
+                    imageview.setImageBitmap(bMap);
                     //mostro path per vedere se va bene
-                    text.setText(path);
+                    text.setText(mCurrentPhotoPath);
                     btnUpload.setVisibility(View.VISIBLE);
                     btn.setText("Modifica inserimento");
                 } catch (IOException e) {
@@ -261,11 +274,13 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                 byte[] bMapArray = new byte[buf.available()];
                 buf.read(bMapArray);
                 Bitmap bMap = BitmapFactory.decodeByteArray(bMapArray, 0, bMapArray.length);
+                bMap = RotateBitmap(bMap,90);
                 imageview.setImageBitmap(bMap);
             } catch (Exception e ){
                 //Dioboia
             }
-
+            btnUpload.setClickable(true);
+            btnUpload.setBackgroundColor(Color.YELLOW);
             btnUpload.setVisibility(View.VISIBLE);
             btnUpload.setText("Scopri che dissesto sei");
             btn.setText("Modifica inserimento");
@@ -276,12 +291,20 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         }
     }
 
+    public static Bitmap RotateBitmap(Bitmap source, float angle)
+    {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
     //save image in specified directory
     public String saveImage(Bitmap myBitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         myBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         File wallpaperDirectory = new File(
                 Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
+
         // have the object build the directory structure, if needed.
         if (!wallpaperDirectory.exists()) {
             wallpaperDirectory.mkdirs();
@@ -355,7 +378,8 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         asyncTask.execute(mCurrentPhotoPath,lon,lat);
         btnUpload.setVisibility(View.VISIBLE);
         btnUpload.setClickable(false);
-        btnUpload.setText("Sto elaborando merdaccia");
+        btnUpload.setBackgroundColor(Color.GREEN);
+        btnUpload.setText("Sto pensando merdaccia");
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -382,8 +406,12 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
 
      public void processFinish(String output){
          Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();
-         text.setText(output);
-         btnUpload.setVisibility(View.INVISIBLE);
+         String[] arr_output = output.split("-");
+
+         text.setText(arr_output[1].toUpperCase() + " : " +arr_output[2] + "  ---  "
+                 + arr_output[3].toUpperCase() + " : " +arr_output[4]);
+         btnUpload.setText("Ho finito");
+         btnUpload.setBackgroundColor(Color.CYAN);
          }
 
     public void map(View view) {
