@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -29,11 +32,16 @@ import com.karumi.dexter.listener.DexterError;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.PermissionRequestErrorListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity  implements AsyncResponse {
@@ -167,10 +175,56 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         startActivityForResult(galleryIntent, GALLERY);
     }
 
+    String mCurrentPhotoPath;
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStorageDirectory();
+        File wallpaperDirectory = new File(
+                Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
+        // have the object build the directory structure, if needed.
+        if (!wallpaperDirectory.exists()) {
+            wallpaperDirectory.mkdirs();
+        }
+        storageDir = wallpaperDirectory;
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        Toast.makeText(this, mCurrentPhotoPath, Toast.LENGTH_SHORT).show();
+        return image;
+    }
+
+    static final int REQUEST_TAKE_PHOTO = 1;
+
     //capture a picture
     private void takePhotoFromCamera() {
-        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, CAMERA);
+        //Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        //startActivityForResult(intent, CAMERA);
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+
+                Uri photoURI = FileProvider.getUriForFile(this,"com.example.android.fileprovider",photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, CAMERA);
+            }
+        }
     }
 
     //Activity results
@@ -200,13 +254,24 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             }
 
         } else if (requestCode == CAMERA) {
-            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            imageview.setImageBitmap(thumbnail);
+           // Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+            try {
+                FileInputStream in = new FileInputStream(mCurrentPhotoPath);
+                BufferedInputStream buf = new BufferedInputStream(in);
+                byte[] bMapArray = new byte[buf.available()];
+                buf.read(bMapArray);
+                Bitmap bMap = BitmapFactory.decodeByteArray(bMapArray, 0, bMapArray.length);
+                imageview.setImageBitmap(bMap);
+            } catch (Exception e ){
+                //Dioboia
+            }
+
             btnUpload.setVisibility(View.VISIBLE);
+            btnUpload.setText("Scopri che dissesto sei");
             btn.setText("Modifica inserimento");
-            path=saveImage(thumbnail);
-            //mostro il path per vedere se è giusto
-            text.setText(path);
+            //path=saveImage(thumbnail);
+            //mostro il path per vedere se è giusto*/
+            text.setText(mCurrentPhotoPath);
             //Toast.makeText(MainActivity.this, "Image Saved!"+path, Toast.LENGTH_SHORT).show();
         }
     }
@@ -287,7 +352,10 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         asyncTask.delegate = this;
         String lon=Double.toString(longitude);
         String lat=Double.toString(latitude);
-        asyncTask.execute(path,lon,lat);
+        asyncTask.execute(mCurrentPhotoPath,lon,lat);
+        btnUpload.setVisibility(View.VISIBLE);
+        btnUpload.setClickable(false);
+        btnUpload.setText("Sto elaborando merdaccia");
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
@@ -315,6 +383,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
      public void processFinish(String output){
          Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();
          text.setText(output);
+         btnUpload.setVisibility(View.INVISIBLE);
          }
 
     public void map(View view) {
