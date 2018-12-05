@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean networkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
             if (gpsEnabled && networkEnabled) {
-               if (gps_loc.getAccuracy() < net_loc.getAccuracy()) {
+               if (gps_loc.getAccuracy() > net_loc.getAccuracy()) {
                     location = net_loc;
                     l="net";
                }
@@ -115,7 +115,8 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                }
                 longitude=location.getLongitude(); // E
                 latitude=location.getLatitude(); // N
-                text.setText("lon E: " + Double.toString(longitude) + " ||  lat N: " + Double.toString(latitude)+l);
+                text.setText("LNG E: " + Double.toString(longitude) + " ||  LAT N: " + Double.toString(latitude)
+                + "GPS ACC : "+  Double.toString(gps_loc.getAccuracy()) + " || NET ACC : " + Double.toString(net_loc.getAccuracy()) + " | USING : " + l);
             } else {
                 if (gpsEnabled){
                     location = gps_loc;
@@ -312,7 +313,8 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     };
 
      public void processFinish(String output){
-         //Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();
+         Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();
+         text.setText(output);
          }
 
     public void map(View view) {
