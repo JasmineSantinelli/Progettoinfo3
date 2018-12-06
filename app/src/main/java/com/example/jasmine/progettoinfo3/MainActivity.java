@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         if (UnameValue != null){
             name.setVisibility(View.GONE);
             text.setVisibility(View.VISIBLE);
-            text.setText("Bentornato : " + UnameValue);
+            text.setText("Bentornato " + UnameValue + "!");
         } else {
             text.setVisibility(View.GONE);
             name.setVisibility(View.VISIBLE);
