@@ -2,6 +2,7 @@ package com.example.jasmine.progettoinfo3;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +29,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -64,6 +75,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
      * Location of the user costantly updated
      */
     private Location location = null;
+    private Location location2 = null;
     /**
      * Latutude of the user
      */
@@ -92,6 +104,16 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     private final String DefaultPasswordValue = "";
     private String PasswordValue;
 
+    private FusedLocationProviderClient mFusedLocationClient;
+
+
+
+    private LocationManager mLocationManager;
+
+
+
+
+
 
     @Override
     public void onPause() {
@@ -106,24 +128,12 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         loadPreferences();
     }
 
-    private void savePreferences() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-
-        // Edit and commit
-        System.out.println("onPause save name: " + UnameValue);
-        editor.putString(PREF_UNAME, UnameValue);
-        editor.commit();
-    }
-
-    private void loadPreferences() {
-
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
-                Context.MODE_PRIVATE);
-        // Get value
-        UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
-        System.out.println("onResume load name: " + UnameValue);
+    protected void createLocationRequest() {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(2000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setMaxWaitTime(5000);
     }
 
     /**
@@ -136,7 +146,9 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             String message = String.format(
                     "New Location \n Longitude: %1$s \n Latitude: %2$s",
                     location.getLongitude(), location.getLatitude()
+
             );
+            //aggiornaPosix();
             // Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
         }
         public void onProviderDisabled(String arg0) {
@@ -163,7 +175,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         setContentView(R.layout.activity_main);
         requestMultiplePermissions();
         //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mCurrentPhotoPath = null;
         btnUpload = findViewById(R.id.btn_upload);
         btnUpload.setBackgroundResource(R.color.colorAccent);
@@ -175,6 +187,38 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         text4 = findViewById(R.id.textView8);
         name = findViewById(R.id.editText);
         FloatingActionButton floatButton = findViewById(R.id.floatingActionButton3);
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(2000);
+        locationRequest.setFastestInterval(1000);
+        LocationCallback mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        //TODO: UI updates.
+                    }
+                }
+            }
+        };
+
+
+
+        try {
+            LocationServices.getFusedLocationProviderClient(this).requestLocationUpdates(locationRequest, mLocationCallback, null);
+
+            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            LocationListener mLocListener = new MyLocationListener();
+            LocationListener mLocListener2 = new MyLocationListener();
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocListener);
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocListener2);
+        } catch (SecurityException e){}
+
+
         if (UnameValue.equals(""))
             UnameValue = null;
         if (UnameValue != null){
@@ -209,9 +253,40 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
 
             }
         });
+
         // Aggiorna posizione
         aggiornaPosix();
+        aggiornaPosix2();
 
+    }
+
+
+
+    public void aggiornaPosix2(){
+        try {
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+
+                            if (location != null) {
+                                location2 = location;
+                                Toast.makeText(MainActivity.this, "Posizione aggiornata",
+                                        Toast.LENGTH_SHORT).show();
+                                text.setText("accuratezza : " + location2.getAccuracy());
+                                longitude=location2.getLongitude(); // E
+                                latitude=location2.getLatitude(); // N
+                                text1.setText("LA : " + Double.toString(latitude));
+                                text2.setText("LN : " + Double.toString(longitude));
+
+                            }
+                        }
+                    });
+
+        } catch (SecurityException e){
+
+        }
     }
 
     /**
@@ -279,27 +354,21 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
      */
     public void button_aggiornaPosix(View view){
         aggiornaPosix();
+        aggiornaPosix2();
     }
 
     /**
      * Update position reteived trough the sensors gpsLocation and netLocation
      */
     void aggiornaPosix(){
-        LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
 
         try {
 
-            //mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            //mFusedLocationClient.getLastLocation();
-            LocationListener mLocListener = new MyLocationListener();
-            LocationListener mLocListener2 = new MyLocationListener();
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocListener);
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocListener2);
-
-            //mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER,mLocationListener,Looper.getMainLooper());
 
             Location gps_loc = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             Location net_loc = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
             boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean networkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
@@ -538,6 +607,8 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             if (mCurrentPhotoPath != null && UnameValue != null && !UnameValue.equals("")) {
                 Upload asyncTask = new Upload("http://progettoscandurra.andreacavagna.it/caricacellulare");
                 asyncTask.delegate = this;
+                aggiornaPosix();
+                aggiornaPosix2();
                 String lon = Double.toString(longitude);
                 String lat = Double.toString(latitude);
                 name.setVisibility(View.GONE);
@@ -582,6 +653,27 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         intent.putExtra("lon",longitude);
         startActivity(intent);
     }
+
+    private void savePreferences() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+
+        // Edit and commit
+        System.out.println("onPause save name: " + UnameValue);
+        editor.putString(PREF_UNAME, UnameValue);
+        editor.commit();
+    }
+
+    private void loadPreferences() {
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,
+                Context.MODE_PRIVATE);
+        // Get value
+        UnameValue = settings.getString(PREF_UNAME, DefaultUnameValue);
+        System.out.println("onResume load name: " + UnameValue);
+    }
+
 
 
 }

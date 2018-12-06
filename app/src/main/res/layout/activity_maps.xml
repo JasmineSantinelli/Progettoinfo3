@@ -18,7 +18,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="7"
+        android:layout_weight="6"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -42,7 +42,7 @@
                     android:text="Buche"
                     android:textAppearance="@style/TextAppearance.AppCompat.Button"
                     android:textColor="#FFFFFF"
-                    android:textSize="8dp" />
+                    android:textSize="12dp" />
 
                 <Button
                     android:id="@+id/textView4"
@@ -53,7 +53,7 @@
                     android:text="Fessure"
                     android:textAlignment="center"
                     android:textColor="#FFFFFF"
-                    android:textSize="8dp" />
+                    android:textSize="12dp" />
 
             </LinearLayout>
 
@@ -72,7 +72,7 @@
                     android:text="Rappezzi"
                     android:textAlignment="center"
                     android:textColor="#FFFFFF"
-                    android:textSize="8dp" />
+                    android:textSize="12dp" />
 
                 <Button
                     android:id="@+id/textView6"
@@ -84,7 +84,7 @@
                     android:text="Tombini"
                     android:textAlignment="center"
                     android:textColor="#FFFFFF"
-                    android:textSize="8dp" />
+                    android:textSize="12dp" />
             </LinearLayout>
 
         </LinearLayout>
