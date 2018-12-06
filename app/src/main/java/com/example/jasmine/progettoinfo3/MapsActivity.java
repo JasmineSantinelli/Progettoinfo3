@@ -78,7 +78,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(this);
         LatLng io = new LatLng(latitudine,longitudine);
         mMap.addMarker(new MarkerOptions().position(io).title("Io sono qui!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(io,14));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(io,15));
     }
 
 
