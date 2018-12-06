@@ -298,11 +298,11 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
 
             //mLocationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER,mLocationListener,Looper.getMainLooper());
 
-            //location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             Location gps_loc = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             Location net_loc = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean networkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
             if (gpsEnabled && networkEnabled && gps_loc != null && net_loc != null) {
                 if (gps_loc.getAccuracy() > net_loc.getAccuracy()) {
                     location = net_loc;
@@ -320,15 +320,22 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                 text2.setText("LON : " + Double.toString(longitude));
                 text3.setText("NET Accuracy : " + String.format("%.2f", net_loc.getAccuracy()));
                 text4.setText("GPS Accuracy : " + String.format("%.2f", gps_loc.getAccuracy()));
-
+                Toast.makeText(this, "Nuova posizione settata", Toast.LENGTH_SHORT).show();
                 } else if (gpsEnabled && gps_loc != null) {
                 location = gps_loc;
                 longitude=location.getLongitude(); // E
                 latitude=location.getLatitude(); // N
+                text1.setText("LAT : " + Double.toString(latitude));
+                text2.setText("LON : " + Double.toString(longitude));
+                text4.setText("GPS Accuracy : " + String.format("%.2f", gps_loc.getAccuracy()));
+
             } else if (networkEnabled && net_loc != null) {
                 location = net_loc;
                 longitude=location.getLongitude(); // E
                 latitude=location.getLatitude(); // N
+                text1.setText("LAT : " + Double.toString(latitude));
+                text2.setText("LON : " + Double.toString(longitude));
+                text3.setText("NET Accuracy : " + String.format("%.2f", net_loc.getAccuracy()));
             } else {
                 throw new Exception("Non e possibile accedere ai sensori");
             }
