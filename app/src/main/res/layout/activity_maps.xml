@@ -11,12 +11,14 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="421dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         tools:context=".MapsActivity" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_weight="7"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -38,8 +40,9 @@
                     android:layout_weight="1"
                     android:backgroundTint="@android:color/holo_red_dark"
                     android:text="Buche"
-                    android:textAlignment="center"
-                    android:textColor="#FFFFFF" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button"
+                    android:textColor="#FFFFFF"
+                    android:textSize="8dp" />
 
                 <Button
                     android:id="@+id/textView4"
@@ -49,7 +52,8 @@
                     android:backgroundTint="@android:color/holo_blue_dark"
                     android:text="Fessure"
                     android:textAlignment="center"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="#FFFFFF"
+                    android:textSize="8dp" />
 
             </LinearLayout>
 
@@ -67,7 +71,8 @@
                     android:backgroundTint="@color/colorPrimaryDark"
                     android:text="Rappezzi"
                     android:textAlignment="center"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="#FFFFFF"
+                    android:textSize="8dp" />
 
                 <Button
                     android:id="@+id/textView6"
@@ -78,7 +83,8 @@
                     android:backgroundTint="@android:color/holo_orange_dark"
                     android:text="Tombini"
                     android:textAlignment="center"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="#FFFFFF"
+                    android:textSize="8dp" />
             </LinearLayout>
 
         </LinearLayout>

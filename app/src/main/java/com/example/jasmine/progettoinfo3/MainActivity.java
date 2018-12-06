@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -46,24 +47,48 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Main activity of the project, it allows you to upload an image and see its classification
+ * Implements AsyncResponse
+ */
 public class MainActivity extends AppCompatActivity  implements AsyncResponse {
-    //Declaration
-    private String path=null;
+
+
+    /**
+     * Folder in witch the photos taken within the app will be saved
+     *
+     * (default folder... /PROGETTOINFO3)
+     *
+     */
+    private static final String IMAGE_DIRECTORY = "/PROGETTOINFO3";
+    /**
+     * Location of the user costantly updated
+     */
+    private Location location;
+    /**
+     * Latutude of the user
+     */
+    private double longitude = 0;
+    /**
+     * Longitude of the user
+     */
+    private double latitude = 0;
+    /**
+     * String in witch the photo will be saved
+     */
+    private String mCurrentPhotoPath;
+
     private Button btnUpload;
-    private Button btn;
     private TextView text,text1,text2,text3,text4;
     private ImageView imageview;
-    private static final String IMAGE_DIRECTORY = "/PROGETTOINFO3";
     private int GALLERY = 1, CAMERA = 2;
-    Location location;
-    double longitude = 0;
-    double latitude = 0;
-    String l;
-    private FusedLocationProviderClient mFusedLocationClient;
 
 
-
-
+    /**
+     * Method automatically called by the OS on the creation of the activity, it's used to set all
+     * the parameters needed, it a sort of a constructor
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -72,8 +97,8 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         requestMultiplePermissions();
         //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
-
-        btn = (Button) findViewById(R.id.btn);
+        mCurrentPhotoPath = null;
+        //btn = (Button) findViewById(R.id.btn);
         btnUpload= (Button) findViewById(R.id.btn_upload);
         btnUpload.setBackgroundResource(R.color.colorAccent);
         imageview = (ImageView) findViewById(R.id.iv);
@@ -82,24 +107,37 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         text2 = findViewById(R.id.textView2);
         text3 = findViewById(R.id.textView7);
         text4 = findViewById(R.id.textView8);
+        FloatingActionButton floatButton = findViewById(R.id.floatingActionButton3);
         //SE PREMO IL BTN RICHIAMA IL METODO PER APRIRE LA FINESTRA DI DIALOGO
-        btn.setOnClickListener(new View.OnClickListener() {
+        /*btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPictureDialog();
+            }
+        });*/
+        floatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showPictureDialog();
             }
         });
-
-        //location
-
+        // Aggiorna posizione
         aggiornaPosix();
 
     }
 
+    /**
+     * Method invocated when pressed the button "aggiorna posizione",
+     * The position is also updated constantly when the user moves
+     * @param view
+     */
     public void button_aggiornaPosix(View view){
         aggiornaPosix();
     }
 
+    /**
+     * Update position reteived trough the sensors gpsLocation and netLocation
+     */
     void aggiornaPosix(){
         LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -122,11 +160,13 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             if (gpsEnabled && networkEnabled) {
                if (gps_loc.getAccuracy() > net_loc.getAccuracy()) {
                     location = net_loc;
-                    l="net";
+                    text3.setBackgroundColor(Color.YELLOW);
+                    text4.setBackgroundColor(Color.TRANSPARENT);
                }
                 else {
                    location = gps_loc;
-                   l = "gps";
+                   text3.setBackgroundColor(Color.TRANSPARENT);
+                   text4.setBackgroundColor(Color.YELLOW);
                }
                 longitude=location.getLongitude(); // E
                 latitude=location.getLatitude(); // N
@@ -138,10 +178,8 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                 } else {
                 if (gpsEnabled){
                     location = gps_loc;
-                    l = "gps";
                 } else if (networkEnabled){
                     location = net_loc;
-                    l = "net";
                 } else {
                     Toast.makeText(this, "Posizione non trovata :(", Toast.LENGTH_SHORT).show();
                 }
@@ -153,7 +191,9 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         }
     }
 
-    //select between camera or gallery to upload an image
+    /**
+     * Select between camera or gallery to upload an image
+     */
     private void showPictureDialog(){
         AlertDialog.Builder pictureDialog = new AlertDialog.Builder(this);
         pictureDialog.setTitle("Cosa vuoi fare?");
@@ -179,7 +219,9 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         pictureDialog.show();
     }
 
-    //select a photo from gallery
+    /**
+     * Select a photo from the phone gallery
+     */
     public void choosePhotoFromGallery() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -187,8 +229,11 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         startActivityForResult(galleryIntent, GALLERY);
     }
 
-    String mCurrentPhotoPath;
-
+    /**
+     * Create a new file in witch the photo taken from the camera will be later saved
+     * @return The empty file
+     * @throws IOException
+     */
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -213,9 +258,9 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         return image;
     }
 
-    static final int REQUEST_TAKE_PHOTO = 1;
-
-    //capture a picture
+    /**
+     * Take a foto from the camera, it call the createImageFile() function
+     */
     private void takePhotoFromCamera() {
         //Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         //startActivityForResult(intent, CAMERA);
@@ -239,7 +284,13 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         }
     }
 
-    //Activity results
+    /**
+     * The result after the user select either select an image from the gallery or take a new picture,
+     * the parameters are automatically set from the OS
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -259,7 +310,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                     //mostro path per vedere se va bene
                     text.setText(mCurrentPhotoPath);
                     btnUpload.setVisibility(View.VISIBLE);
-                    btn.setText("Modifica inserimento");
+                    //btn.setText("Modifica inserimento");
                 } catch (IOException e) {
                     e.printStackTrace();
                     //Toast.makeText(MainActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
@@ -283,7 +334,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             btnUpload.setBackgroundColor(Color.YELLOW);
             btnUpload.setVisibility(View.VISIBLE);
             btnUpload.setText("Scopri che dissesto sei");
-            btn.setText("Modifica inserimento");
+            //btn.setText("Modifica inserimento");
             //path=saveImage(thumbnail);
             //mostro il path per vedere se è giusto*/
             text.setText(mCurrentPhotoPath);
@@ -291,15 +342,25 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         }
     }
 
-    public static Bitmap RotateBitmap(Bitmap source, float angle)
-    {
+    /**
+     * Rotate a bitmap
+     *
+     * @param source The image to be rotated
+     * @param angle The angle in deegres of the rotation (clockwise)
+     * @return The rotated bitmap
+     */
+    public static Bitmap RotateBitmap(Bitmap source, float angle){
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
-    //save image in specified directory
-    public String saveImage(Bitmap myBitmap) {
+    /**
+     * Save an image in a specified directory, the directory is a global parameter
+     * @param myBitmap The bitmap to be saved
+     * @return The absolute path of the image
+     */
+    private String saveImage(Bitmap myBitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         myBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         File wallpaperDirectory = new File(
@@ -325,7 +386,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-        return "";
+        return "Error";
     }
     //require permission
     private void  requestMultiplePermissions(){
@@ -368,43 +429,36 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                 .check();
     }
 
-    //change Activity
+    /**
+     * Function that use HTTP connection to make a POST request to the server
+     * @param view
+     */
     public void upload(View view) {
         //execute task with parameters of path latitude and longitude
-        Upload asyncTask = new Upload();
-        asyncTask.delegate = this;
-        String lon=Double.toString(longitude);
-        String lat=Double.toString(latitude);
-        asyncTask.execute(mCurrentPhotoPath,lon,lat);
-        btnUpload.setVisibility(View.VISIBLE);
-        btnUpload.setClickable(false);
-        btnUpload.setBackgroundColor(Color.GREEN);
-        btnUpload.setText("Sto pensando merdaccia");
+        try {
+            if (mCurrentPhotoPath != null) {
+                Upload asyncTask = new Upload();
+                asyncTask.delegate = this;
+                String lon = Double.toString(longitude);
+                String lat = Double.toString(latitude);
+                asyncTask.execute(mCurrentPhotoPath, lon, lat);
+                btnUpload.setVisibility(View.VISIBLE);
+                btnUpload.setClickable(false);
+                btnUpload.setBackgroundColor(Color.GREEN);
+                btnUpload.setText("Sto pensando merdaccia");
+            } else {
+                Toast.makeText(this, "Metti la foto pirlotto", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e){
+            Toast.makeText(this, "Mi sono rotto :(", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private final LocationListener mLocationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(final Location location) {
-            aggiornaPosix();
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            aggiornaPosix();
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
-
-     public void processFinish(String output){
+    /**
+     * It receives the result of the computation of the server
+     * @param output The string received from the server
+     */
+    public void processFinish(String output){
          Toast.makeText(MainActivity.this, output, Toast.LENGTH_SHORT).show();
          String[] arr_output = output.split("-");
 
@@ -414,6 +468,10 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
          btnUpload.setBackgroundColor(Color.CYAN);
          }
 
+    /**
+     * Open a new activity with a map
+     * @param view
+     */
     public void map(View view) {
         Intent intent=new Intent(this,MapsActivity.class);
         intent.putExtra("lat",latitude);
@@ -421,6 +479,10 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         startActivity(intent);
     }
 
+    /**
+     * Anonymous class that re-define the LocationListener class, it update the position show in the
+     * text view every time that the user moves
+     */
     public class MyLocationListener implements LocationListener{
 
         public void onLocationChanged(Location loc) {

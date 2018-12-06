@@ -12,6 +12,18 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/floatingActionButton3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:clickable="true"
+            app:backgroundTint="@android:color/holo_blue_bright"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@android:drawable/ic_input_add" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -30,18 +42,6 @@
                 android:layout_weight="0.6"
                 android:scaleType="fitXY"
                 android:src="@mipmap/ic_launcher_round" />
-
-            <Button
-                android:id="@+id/btn"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/colorAccent"
-                android:text="Seleziona o scatta una foto"
-                android:textAppearance="@style/TextAppearance.AppCompat.Button"
-                android:textColor="#FFFFFF" />
 
             <TextView
                 android:id="@+id/txt"
