@@ -97,22 +97,13 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     private static final String PREFS_NAME = "preferences";
     private static final String PREF_UNAME = "Username";
     private static final String PREF_PASSWORD = "Password";
-    EditText name;
+    private EditText name;
     private final String DefaultUnameValue = "";
     private String UnameValue;
 
-    private final String DefaultPasswordValue = "";
-    private String PasswordValue;
-
     private FusedLocationProviderClient mFusedLocationClient;
 
-
-
     private LocationManager mLocationManager;
-
-
-
-
 
 
     @Override
@@ -508,7 +499,6 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
             }
         }
     }
-
 
     /**
      * Rotate a bitmap
