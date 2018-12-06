@@ -1,17 +1,13 @@
 package com.example.jasmine.progettoinfo3;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener;
-import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -19,7 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import static com.google.android.gms.maps.GoogleMap.*;
+import static com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,AsyncResponse,OnCameraIdleListener {
 
@@ -82,7 +78,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(this);
         LatLng io = new LatLng(latitudine,longitudine);
         mMap.addMarker(new MarkerOptions().position(io).title("Io sono qui!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(io,13));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(io,14));
     }
 
 
