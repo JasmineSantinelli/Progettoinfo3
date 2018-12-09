@@ -106,7 +106,9 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
 
     private LocationManager mLocationManager;
 
-
+    /**
+     * Function called when the application is paused by the system
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -114,10 +116,22 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
 
     }
 
+    /**
+     * Function called when the application is resumed by the system
+     */
     @Override
     public void onResume() {
         super.onResume();
         loadPreferences();
+    }
+
+    /**
+     * Function called when the application is stopped and killed my the memory manager
+     */
+    @Override
+    public void onStop() {
+        super.onStop();
+        savePreferences();
     }
 
     protected void createLocationRequest() {
@@ -170,7 +184,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         mCurrentPhotoPath = null;
         btnUpload = findViewById(R.id.btn_upload);
-        btnUpload.setBackgroundResource(R.color.colorAccent);
+        btnUpload.setBackgroundResource(R.color.colorPrimary);
         imageview = findViewById(R.id.iv);
         text = findViewById(R.id.txt);
         text1 = findViewById(R.id.textView);
@@ -178,12 +192,19 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         text3 = findViewById(R.id.textView7);
         text4 = findViewById(R.id.textView8);
         name = findViewById(R.id.editText);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
 
+        // toolbar con scritto progetto scandurra
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
-        actionbar.setDisplayHomeAsUpEnabled(true);
-        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+        if (actionbar != null) {
+            actionbar.setDisplayHomeAsUpEnabled(true);
+            actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+        }
 
 
         FloatingActionButton floatButton = findViewById(R.id.floatingActionButton3);
@@ -194,6 +215,18 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         // set item as selected to persist highlight
+
+                        switch (menuItem.getItemId()){
+                            case R.id.nav_login:
+                                avviaLoginActivity();
+                                break;
+                            case R.id.nav_gallery:
+                                break;
+
+                            default:
+                                break;
+                        }
+
                         menuItem.setChecked(true);
                         // close drawer when item is tapped
                         mDrawerLayout.closeDrawers();
@@ -236,6 +269,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(2000);
         locationRequest.setFastestInterval(1000);
+
         LocationCallback mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -304,6 +338,11 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
 
     }
 
+    void avviaLoginActivity(){
+        Intent intent=new Intent(this,LoginActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -315,7 +354,12 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     }
 
 
+    // le aggiorna con le fusedAPI
 
+    /**
+     * Update the position using the fused google's API, witch retrieve data from both gps and network
+     * sensors
+     */
     public void aggiornaPosix2(){
         try {
             mFusedLocationClient.getLastLocation()
@@ -354,7 +398,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == this.RESULT_CANCELED) {
+        if (resultCode == RESULT_CANCELED) {
             return;
         }
         if (requestCode == GALLERY) {
@@ -715,7 +759,9 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
         // Edit and commit
         System.out.println("onPause save name: " + UnameValue);
         editor.putString(PREF_UNAME, UnameValue);
-        editor.commit();
+
+        // prima avevo usato editor.commit();
+        editor.apply();
     }
 
     private void loadPreferences() {
