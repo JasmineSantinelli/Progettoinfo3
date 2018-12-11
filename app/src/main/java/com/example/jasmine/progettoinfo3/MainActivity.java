@@ -339,7 +339,7 @@ public class MainActivity extends AppCompatActivity  implements AsyncResponse {
     }
 
     void avviaLoginActivity(){
-        Intent intent=new Intent(this,LoginActivity.class);
+        Intent intent=new Intent(this,LogActivity.class);
         startActivity(intent);
     }
 
