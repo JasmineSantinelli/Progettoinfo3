@@ -32,11 +32,11 @@ public class LogActivity extends AppCompatActivity implements AsyncResponse {
             }
         RequestForLogin reqForLogin = new RequestForLogin();
         reqForLogin.delegate = this;
-        reqForLogin.execute(email,password);
+        reqForLogin.execute("login",email,password);
     }
 
     public  void registrati(View view){
-        Intent intent=new Intent(this,LogActivity.class);
+        Intent intent=new Intent(this,SignupActivity.class);
         startActivity(intent);
 
     }

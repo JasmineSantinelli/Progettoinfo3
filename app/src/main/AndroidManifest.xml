@@ -65,7 +65,8 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".LogActivity"></activity>
+        <activity android:name=".LogActivity" />
+        <activity android:name=".SignupActivity"></activity>
     </application>
 
 </manifest>
