@@ -4,6 +4,16 @@
     <group android:checkableBehavior="single">
 
         <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="Casa dolce casa" />
+
+        <item
+            android:id="@+id/nav_login"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="Loggati merda" />
+
+        <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_launcher_foreground"
             android:title="Dio banana" />
@@ -13,10 +23,6 @@
             android:icon="@drawable/ic_launcher_background"
             android:title="Madonna schifosa" />
 
-        <item
-            android:id="@+id/nav_login"
-            android:icon="@drawable/ic_launcher_background"
-            android:title="Loggati merda" />
 
     </group>
 </menu>
